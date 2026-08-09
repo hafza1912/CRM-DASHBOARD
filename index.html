@@ -5,306 +5,392 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Enterprise CRM Dashboard</title>
 <style>
-/* --- CSS VARIABLES (Light & Dark Mode) --- */
-:root {
-  --bg-color: #f4f7f6; --text-main: #333333; --text-muted: #7f8c8d;
-  --card-bg: #ffffff; --border-color: #dddddd; --table-hover: #f9fbfb;
-  --input-bg: #ffffff; --kpi-title: #2c3e50; --primary-color: #3498db;
-  --primary-hover: #2980b9; --error-bg: #ffeaea; --error-text: #e74c3c;
-  --success-bg: #d4edda; --success-text: #155724; --shadow: rgba(0, 0, 0, 0.08);
-}
-body.dark-mode {
-  --bg-color: #121212; --text-main: #e0e0e0; --text-muted: #a0a0a0;
-  --card-bg: #1e1e1e; --border-color: #333333; --table-hover: #2a2a2a;
-  --input-bg: #2d2d2d; --kpi-title: #ffffff; --shadow: rgba(0, 0, 0, 0.4);
-}
+  /* =========================================
+     CSS SECTION: Styling the page
+     ========================================= */
+     
+  /* Basic Reset: Removes default browser spacing and makes sizing predictable */
+  * { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    font-family: Arial, sans-serif; 
+  }
+  
+  /* Set the default background and text color for the whole page */
+  body { 
+    background-color: #f4f4f4; 
+    color: #333; 
+  }
 
-/* --- RESET & BASE STYLES --- */
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-body { background-color: var(--bg-color); color: var(--text-main); transition: 0.3s; min-height: 100vh; }
+  /* --- DARK MODE LOGIC --- */
+  /* When the 'dark-mode' class is added to the <body> via JavaScript, 
+     these styles will overwrite the default ones above. */
+  body.dark-mode { background-color: #222; color: #eee; }
+  body.dark-mode .card, 
+  body.dark-mode table th { background-color: #333; color: #eee; border-color: #555; }
+  body.dark-mode input, 
+  body.dark-mode select { background-color: #444; color: #eee; border-color: #666; }
+  body.dark-mode td { border-bottom: 1px solid #555; }
 
-/* --- SHARED LAYOUT & CARDS --- */
-.login-wrapper { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 1rem; }
-.dashboard-wrapper { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-.login-card, .kpi-card, .add-client-card, .table-container { background: var(--card-bg); border-radius: 8px; box-shadow: 0 4px 15px var(--shadow); }
+  /* --- LAYOUT WRAPPERS --- */
+  /* Centers the login box perfectly in the middle of the screen */
+  .login-wrapper { display: flex; justify-content: center; align-items: center; height: 100vh; }
+  
+  /* Restricts the dashboard width so it doesn't stretch too far on huge monitors */
+  .dashboard-wrapper { max-width: 1000px; margin: 20px auto; padding: 20px; }
+  
+  /* Simple card styling to group content together with a border */
+  .card { 
+    background: white; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    padding: 20px; 
+    margin-bottom: 20px; 
+  }
 
-/* --- LOGIN SPECIFIC STYLES --- */
-.login-card { width: 100%; max-width: 400px; padding: 2.5rem; position: relative; }
-.login-header { text-align: center; margin-bottom: 2rem; }
-.login-header h1 { font-size: 1.8rem; color: var(--primary-color); margin-bottom: 0.5rem; }
-.login-header p { color: var(--text-muted); font-size: 0.95rem; }
-.form-group { margin-bottom: 1.25rem; }
-.form-group label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600; }
-.message-box { display: none; padding: 0.75rem; border-radius: 6px; margin-bottom: 1.5rem; font-size: 0.9rem; text-align: center; font-weight: 600; }
-.message-box.error { display: block; background: var(--error-bg); color: var(--error-text); border: 1px solid #ffcece; }
-.message-box.success { display: block; background: var(--success-bg); color: var(--success-text); border: 1px solid #c3e6cb; }
+  /* --- LOGIN SCREEN STYLES --- */
+  .login-box { width: 350px; text-align: center; }
+  .login-box h1 { margin-bottom: 20px; font-size: 24px; }
+  .form-group { margin-bottom: 15px; text-align: left; }
+  .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+  
+  /* --- INPUTS & BUTTONS --- */
+  input, select { 
+    width: 100%; 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 3px; 
+    margin-bottom: 10px;
+  }
+  
+  button { 
+    padding: 10px 15px; 
+    border: none; 
+    border-radius: 3px; 
+    cursor: pointer; 
+    font-weight: bold; 
+  }
+  
+  .btn-primary { background-color: #007bff; color: white; width: 100%; }
+  .btn-primary:hover { background-color: #0056b3; }
+  
+  .btn-danger { background-color: #dc3545; color: white; }
+  .btn-danger:hover { background-color: #a71d2a; }
+  
+  .btn-toggle { background-color: #6c757d; color: white; margin-bottom: 20px; }
 
-/* --- DASHBOARD SPECIFIC STYLES --- */
-.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-.header h1 { font-size: 1.8rem; color: var(--kpi-title); }
-.header p { color: var(--text-muted); }
-.kpi-grid { display: flex; gap: 1.5rem; margin-bottom: 2rem; }
-.kpi-card { padding: 1.5rem; flex: 1; border-left: 5px solid var(--primary-color); }
-.kpi-card h3 { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-.kpi-value { font-size: 2rem; font-weight: bold; color: var(--kpi-title); margin-top: 0.5rem; }
-.add-client-card { padding: 1.5rem; margin-bottom: 2rem; }
-.add-client-card h3 { margin-bottom: 1rem; font-size: 1.1rem; color: var(--kpi-title); }
-.inline-form, .controls { display: flex; flex-wrap: wrap; gap: 1rem; }
-.controls { margin-bottom: 1.5rem; }
+  /* --- ALERT MESSAGE BOX (Hidden by default) --- */
+  #message-box { display: none; padding: 10px; margin-bottom: 15px; border-radius: 3px; }
+  .error-msg { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
 
-/* --- SHARED COMPONENTS (Inputs & Buttons) --- */
-input, select { flex: 1; min-width: 150px; width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-main); border-radius: 6px; font-size: 1rem; outline: none; }
-input:focus, select:focus { border-color: var(--primary-color); }
-button { cursor: pointer; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 600; transition: 0.2s; }
-.btn-primary { width: 100%; padding: 0.85rem; background: var(--primary-color); color: white; margin-top: 1rem; }
-.btn-primary:hover { background: var(--primary-hover); }
-.btn-primary:disabled { background: var(--text-muted); cursor: not-allowed; }
-.btn-danger { padding: 0.4rem 0.8rem; background: var(--error-bg); color: var(--error-text); border: 1px solid #ffcece; }
-.btn-danger:hover { background: var(--error-text); color: white; }
-.btn-outline { padding: 0.5rem 1rem; background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
-.btn-outline:hover { background: var(--card-bg); border-color: var(--primary-color); }
-.theme-toggle-absolute { position: absolute; top: 1rem; right: 1rem; background: transparent; font-size: 1.2rem; border: none; }
+  /* --- DASHBOARD STYLES --- */
+  /* Flexbox makes elements sit side-by-side easily */
+  .header-flex { display: flex; justify-content: space-between; align-items: center; }
+  .kpi-container { display: flex; gap: 20px; }
+  .kpi-box { flex: 1; border-left: 4px solid #007bff; }
+  .kpi-box h3 { color: #666; font-size: 14px; margin-bottom: 5px; }
+  body.dark-mode .kpi-box h3 { color: #aaa; }
+  
+  .inline-form { display: flex; gap: 10px; }
+  .inline-form input, .inline-form select { margin-bottom: 0; }
+  .inline-form button { width: auto; }
 
-/* Table & Badges */
-table { width: 100%; border-collapse: collapse; }
-th, td { padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border-color); }
-th { background: var(--card-bg); font-weight: 600; color: var(--kpi-title); }
-tr:hover { background: var(--table-hover); }
-.badge { padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
-.badge.active { background: var(--success-bg); color: var(--success-text); }
-.badge.pending { background: #fff3cd; color: #856404; }
-.badge.closed { background: #e2e3e5; color: #383d41; }
+  /* --- TABLE STYLES --- */
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+  th { background-color: #f8f9fa; }
+  
+  /* Status tags (The colored bubbles) */
+  .status { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+  .status-active { background-color: #d4edda; color: #155724; }
+  .status-pending { background-color: #fff3cd; color: #856404; }
+  .status-closed { background-color: #e2e3e5; color: #383d41; }
 </style>
 </head>
 <body>
 
-  <!-- ================= LOGIN VIEW ================= -->
+  <!-- =========================================
+       HTML SECTION 1: THE LOGIN VIEW
+       This is visible when the page first loads.
+       ========================================= -->
   <div id="login-view" class="login-wrapper">
-    <div class="login-card">
-      <button class="theme-toggle-btn theme-toggle-absolute">🌙</button>
-      <div class="login-header">
-        <h1>Welcome Back</h1>
-        <p>Sign in to access your CRM Dashboard</p>
-      </div>
-      <div id="message-container" class="message-box"></div>
+    <div class="card login-box">
+      <h1>CRM Login</h1>
+      
+      <!-- This empty div is used to show error messages (like wrong password) -->
+      <div id="message-box"></div>
+      
       <form id="login-form">
         <div class="form-group">
-          <label for="email">Work Email</label>
+          <label>Email Address</label>
           <input type="email" id="email" value="admin@company.com" required>
         </div>
         <div class="form-group">
-          <label for="password">Password</label>
+          <label>Password</label>
           <input type="password" id="password" value="password123" required>
         </div>
-        <button type="submit" id="submit-btn" class="btn-primary">Sign In</button>
+        <button type="submit" class="btn-primary">Login</button>
       </form>
     </div>
   </div>
 
-  <!-- ================= DASHBOARD VIEW (Hidden by default) ================= -->
+  <!-- =========================================
+       HTML SECTION 2: THE DASHBOARD VIEW
+       Notice style="display: none;" - It stays completely hidden 
+       until the JavaScript logs the user in.
+       ========================================= -->
   <div id="dashboard-view" class="dashboard-wrapper" style="display: none;">
-    <header class="header">
-      <div>
-        <h1>Client Pipeline</h1>
-        <p>Manage your enterprise accounts and track revenue.</p>
-      </div>
-      <button class="theme-toggle-btn btn-outline">🌙 Dark Mode</button>
-    </header>
+    <div class="header-flex">
+      <h2>Sales Dashboard</h2>
+      <button id="theme-toggle" class="btn-toggle">Dark Mode</button>
+    </div>
 
-    <section class="kpi-grid">
-      <div class="kpi-card">
-        <h3>Visible Clients</h3>
-        <p id="kpi-count" class="kpi-value">0</p>
+    <!-- KPI Cards (Key Performance Indicators) -->
+    <div class="kpi-container">
+      <div class="card kpi-box">
+        <h3>Total Clients</h3>
+        <!-- JS will inject the count here -->
+        <h2 id="kpi-count">0</h2> 
       </div>
-      <div class="kpi-card">
-        <h3>Total Pipeline Value</h3>
-        <p id="kpi-revenue" class="kpi-value">$0</p>
+      <div class="card kpi-box">
+        <h3>Pipeline Value</h3>
+        <!-- JS will inject the total money here -->
+        <h2 id="kpi-revenue">$0</h2>
       </div>
-    </section>
+    </div>
 
-    <section class="add-client-card">
-      <h3>Add New Client</h3>
-      <form id="add-client-form" class="inline-form">
-        <input type="text" id="new-company" placeholder="Company Name" required>
-        <input type="text" id="new-contact" placeholder="Contact Name" required>
-        <select id="new-status">
+    <!-- Add Client Form -->
+    <div class="card">
+      <h3>Add New Lead</h3>
+      <br>
+      <form id="add-form" class="inline-form">
+        <input type="text" id="add-company" placeholder="Company Name" required>
+        <input type="text" id="add-contact" placeholder="Contact Person" required>
+        <select id="add-status">
           <option value="Active">Active</option>
           <option value="Pending">Pending</option>
           <option value="Closed">Closed</option>
         </select>
-        <input type="number" id="new-value" placeholder="Pipeline Value ($)" required min="0">
-        <button type="submit" class="btn-primary" style="width: auto; margin-top: 0;">Add Client</button>
+        <input type="number" id="add-value" placeholder="Value ($)" required>
+        <button type="submit" class="btn-primary">Add</button>
       </form>
-    </section>
+    </div>
 
-    <section class="controls">
-      <input type="text" id="search-input" placeholder="Search by company name...">
-      <select id="status-filter">
-        <option value="All">All Statuses</option>
-        <option value="Active">Active</option>
-        <option value="Pending">Pending</option>
-        <option value="Closed">Closed</option>
-      </select>
-    </section>
+    <!-- Search Bar & Table -->
+    <div class="card">
+      <div class="inline-form" style="margin-bottom: 15px;">
+        <!-- Search inputs trigger filtering instantly -->
+        <input type="text" id="search-bar" placeholder="Search companies...">
+        <select id="filter-status">
+          <option value="All">All Statuses</option>
+          <option value="Active">Active</option>
+          <option value="Pending">Pending</option>
+          <option value="Closed">Closed</option>
+        </select>
+      </div>
 
-    <section class="table-container">
       <table>
         <thead>
           <tr>
             <th>Company</th>
-            <th>Contact Name</th>
+            <th>Contact</th>
             <th>Status</th>
-            <th>Pipeline Value</th>
-            <th>Actions</th>
+            <th>Value</th>
+            <th>Action</th>
           </tr>
         </thead>
+        <!-- The JS loop will create <tr> elements and put them inside here -->
         <tbody id="table-body">
-          <!-- JS injects rows here -->
         </tbody>
       </table>
-    </section>
+    </div>
   </div>
 
-  <!-- ================= JAVASCRIPT ================= -->
+  <!-- =========================================
+       JAVASCRIPT SECTION: The Brains of the App
+       ========================================= -->
   <script>
-    // --- 1. DARK MODE LOGIC ---
-    const themeButtons = document.querySelectorAll('.theme-toggle-btn');
-
-    function applyTheme() {
-      if (localStorage.getItem('theme') === 'dark') {
-        document.body.classList.add('dark-mode');
-        themeButtons.forEach(btn => btn.textContent = btn.classList.contains('theme-toggle-absolute') ? '☀️' : '☀️ Light Mode');
-      } else {
-        document.body.classList.remove('dark-mode');
-        themeButtons.forEach(btn => btn.textContent = btn.classList.contains('theme-toggle-absolute') ? '🌙' : '🌙 Dark Mode');
-      }
+    /* ----------------------------------------------------
+       PART 1: DARK MODE (Using Browser Local Storage)
+       ---------------------------------------------------- */
+    const themeBtn = document.getElementById('theme-toggle');
+    
+    // Check if the user previously saved 'dark' in their browser memory
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode'); // Turn it on instantly
     }
 
-    themeButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const newTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
-        localStorage.setItem('theme', newTheme);
-        applyTheme();
-      });
+    // What happens when the user clicks the toggle button:
+    themeBtn.addEventListener('click', function() {
+      // Toggle means: "If it has the class, remove it. If it doesn't, add it."
+      document.body.classList.toggle('dark-mode');
+      
+      // Save their choice for the next time they visit the site
+      if (document.body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark');
+      } else {
+        localStorage.setItem('theme', 'light');
+      }
     });
 
-    applyTheme(); // Init theme on load
-
-    // --- 2. LOGIN LOGIC ---
+    /* ----------------------------------------------------
+       PART 2: SINGLE PAGE APP (SPA) LOGIN
+       ---------------------------------------------------- */
+    const loginForm = document.getElementById('login-form');
     const loginView = document.getElementById('login-view');
     const dashboardView = document.getElementById('dashboard-view');
-    const loginForm = document.getElementById('login-form');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const submitBtn = document.getElementById('submit-btn');
-    const messageContainer = document.getElementById('message-container');
+    const msgBox = document.getElementById('message-box');
 
-    function showMessage(type, text) {
-      messageContainer.textContent = text;
-      messageContainer.className = `message-box ${type}`;
-    }
+    loginForm.addEventListener('submit', function(e) {
+      // INTERVIEW TIP: preventDefault() stops the form from refreshing the page!
+      e.preventDefault(); 
 
-    loginForm.addEventListener('submit', function(event) {
-      event.preventDefault();
-      const email = emailInput.value.trim();
-      const password = passwordInput.value.trim();
+      // Get the text the user typed
+      const email = document.getElementById('email').value;
+      const pass = document.getElementById('password').value;
 
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Authenticating...';
-      showMessage('', '');
-
-      setTimeout(() => {
-        if (email === 'admin@company.com' && password === 'password123') {
-          showMessage('success', 'Authentication successful!');
-          
-          setTimeout(() => {
-            // Switch views instead of redirecting
-            loginView.style.display = 'none';
-            dashboardView.style.display = 'block';
-            renderTable(clients); // Load table data
-          }, 600);
-
-        } else {
-          showMessage('error', 'Invalid email or password. Try admin@company.com / password123');
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Sign In';
-        }
-      }, 800);
+      // Check credentials
+      if (email === 'admin@company.com' && pass === 'password123') {
+        // Hide login page, show dashboard page
+        loginView.style.display = 'none';
+        dashboardView.style.display = 'block';
+        
+        // Now that we are logged in, tell JS to draw the data table
+        renderTable(clients); 
+      } else {
+        // Show error message
+        msgBox.style.display = 'block';
+        msgBox.className = 'error-msg';
+        msgBox.innerText = 'Wrong email or password!';
+      }
     });
 
-    // --- 3. DASHBOARD LOGIC ---
+    /* ----------------------------------------------------
+       PART 3: DATA & TABLE RENDERING
+       ---------------------------------------------------- */
+    // This is our "Database" for the prototype. It's an array of Objects.
     let clients = [
       { id: 1, company: "Acme Corp", contact: "Alice Smith", status: "Active", value: 15000 },
-      { id: 2, company: "TechFlow Solutions", contact: "Bob Jones", status: "Pending", value: 8500 },
-      { id: 3, company: "GlobalNet", contact: "Carol White", status: "Closed", value: 0 },
-      { id: 4, company: "DataSync Inc", contact: "David Brown", status: "Active", value: 22000 }
+      { id: 2, company: "TechFlow", contact: "Bob Jones", status: "Pending", value: 8500 },
+      { id: 3, company: "GlobalNet", contact: "Carol White", status: "Closed", value: 0 }
     ];
 
-    const tableBody = document.getElementById('table-body');
-    const searchInput = document.getElementById('search-input');
-    const statusFilter = document.getElementById('status-filter');
-    const kpiCount = document.getElementById('kpi-count');
-    const kpiRevenue = document.getElementById('kpi-revenue');
-    const addClientForm = document.getElementById('add-client-form');
+    // Helper function: Turns 15000 into "$15,000"
+    function formatMoney(amount) {
+      return "$" + amount.toLocaleString();
+    }
 
-    const formatCurrency = (number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(number);
+    // MAIN FUNCTION: Draws the table based on whatever array is passed into it
+    function renderTable(data) {
+      const tbody = document.getElementById('table-body');
+      tbody.innerHTML = ""; // Clear out the old rows so we don't duplicate them
 
-    function renderTable(dataArray) {
-      tableBody.innerHTML = "";
-      dataArray.forEach(client => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td><strong>${client.company}</strong></td>
-          <td>${client.contact}</td>
-          <td><span class="badge ${client.status.toLowerCase()}">${client.status}</span></td>
-          <td>${formatCurrency(client.value)}</td>
-          <td><button class="btn-danger" onclick="deleteClient(${client.id})">Delete</button></td>
+      // Loop over every client object in the array
+      data.forEach(function(client) {
+        
+        // Figure out which CSS class to use for the colored badge
+        let statusClass = "";
+        if (client.status === "Active") statusClass = "status-active";
+        if (client.status === "Pending") statusClass = "status-pending";
+        if (client.status === "Closed") statusClass = "status-closed";
+
+        // Create the HTML string for one row. We use backticks (`) to inject variables.
+        const rowHTML = `
+          <tr>
+            <td><strong>${client.company}</strong></td>
+            <td>${client.contact}</td>
+            <td><span class="status ${statusClass}">${client.status}</span></td>
+            <td>${formatMoney(client.value)}</td>
+            
+            <!-- Notice how we pass the client's unique ID into the delete function -->
+            <td><button class="btn-danger" onclick="deleteClient(${client.id})">Delete</button></td>
+          </tr>
         `;
-        tableBody.appendChild(row);
+        // Add this row to the table body
+        tbody.innerHTML += rowHTML;
       });
-      updateKPIs(dataArray);
+
+      // Update the KPI numbers at the top of the dashboard
+      updateMath(data);
     }
 
-    function updateKPIs(dataArray) {
-      kpiCount.textContent = dataArray.length;
-      const totalRevenue = dataArray.reduce((sum, client) => sum + client.value, 0);
-      kpiRevenue.textContent = formatCurrency(totalRevenue);
+    /* ----------------------------------------------------
+       PART 4: KPI CALCULATIONS (The Math)
+       ---------------------------------------------------- */
+    function updateMath(data) {
+      // 1. Total Clients is simply the length of the array
+      document.getElementById('kpi-count').innerText = data.length;
+      
+      // 2. Calculate Total Revenue using .reduce()
+      // INTERVIEW TIP: Reduce loops through the array and keeps a running total ("sum").
+      // The ", 0" at the end tells the math to start counting from zero.
+      const total = data.reduce((sum, client) => sum + client.value, 0);
+      
+      // Display the final money
+      document.getElementById('kpi-revenue').innerText = formatMoney(total);
     }
 
-    function filterData() {
-      const searchTerm = searchInput.value.toLowerCase();
-      const statusTerm = statusFilter.value;
-      const filteredClients = clients.filter(client => {
-        const matchesSearch = client.company.toLowerCase().includes(searchTerm);
-        const matchesStatus = statusTerm === "All" || client.status === statusTerm;
-        return matchesSearch && matchesStatus;
+    /* ----------------------------------------------------
+       PART 5: SEARCH AND FILTER LOGIC
+       ---------------------------------------------------- */
+    function runSearch() {
+      // Grab what the user typed and make it lowercase so "acme" matches "Acme"
+      const typedText = document.getElementById('search-bar').value.toLowerCase();
+      const chosenStatus = document.getElementById('filter-status').value;
+
+      // Use .filter() to create a brand new, smaller array of just the matches
+      const results = clients.filter(function(client) {
+        
+        // Check if company name includes the search text
+        const matchesName = client.company.toLowerCase().includes(typedText);
+        
+        // Check if the dropdown matches (or if "All" is selected)
+        const matchesStatus = (chosenStatus === "All" || client.status === chosenStatus);
+        
+        // Keep this client ONLY if both conditions are true
+        return matchesName && matchesStatus;
       });
-      renderTable(filteredClients);
+
+      // Erase the old table and draw a new one using the filtered results
+      renderTable(results);
     }
 
-    function handleAddClient(event) {
-      event.preventDefault(); 
-      const newClient = {
-        id: Date.now(),
-        company: document.getElementById('new-company').value,
-        contact: document.getElementById('new-contact').value,
-        status: document.getElementById('new-status').value,
-        value: parseFloat(document.getElementById('new-value').value)
+    // Trigger the search function every time the user types a letter or changes dropdown
+    document.getElementById('search-bar').addEventListener('input', runSearch);
+    document.getElementById('filter-status').addEventListener('change', runSearch);
+
+    /* ----------------------------------------------------
+       PART 6: ADD & DELETE CLIENTS (CRUD Operations)
+       ---------------------------------------------------- */
+    // Add Client
+    document.getElementById('add-form').addEventListener('submit', function(e) {
+      e.preventDefault(); // Stop page refresh
+
+      // Create a brand new client object from the form inputs
+      const newObj = {
+        id: Date.now(), // Creates a unique number based on the current time
+        company: document.getElementById('add-company').value,
+        contact: document.getElementById('add-contact').value,
+        status: document.getElementById('add-status').value,
+        value: Number(document.getElementById('add-value').value) // Make sure it's a Number, not text
       };
-      clients.push(newClient);
-      addClientForm.reset();
-      filterData();
+
+      // Push the new object into our main database array
+      clients.push(newObj);
+      
+      document.getElementById('add-form').reset(); // Clear the form fields
+      runSearch(); // Re-run the search/filter to instantly redraw the screen
+    });
+
+    // Delete Client
+    // This function is triggered by the inline onclick="" in the HTML table
+    function deleteClient(id) {
+      // Overwrite our main array with a filtered version that EXCLUDES the clicked ID
+      clients = clients.filter(client => client.id !== id);
+      
+      runSearch(); // Redraw the screen to reflect the deletion
     }
-
-    // Expose deleteClient to global scope for inline onclick handler
-    window.deleteClient = function(idToDelete) {
-      clients = clients.filter(client => client.id !== idToDelete);
-      filterData();
-    };
-
-    searchInput.addEventListener('input', filterData);
-    statusFilter.addEventListener('change', filterData);
-    addClientForm.addEventListener('submit', handleAddClient);
   </script>
 </body>
 </html>
