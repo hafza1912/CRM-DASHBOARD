@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM Pipeline Dashboard</title>
+  <!-- Links to your CSS file -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <!-- This is centered on the screen and visible by default -->
+  <div id="login-view" class="full-screen-center">
+    <form id="login-form" class="login-box">
+      <h2>CRM Login</h2>
+      <!-- Hidden error message for wrong passwords -->
+      <p id="error-msg" style="display: none; color: red;">Incorrect email or password.</p>
+      
+      <label>Email</label>
+      <input type="email" id="email" placeholder="e.g., admin@company.com" required>
+      
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Enter password" required>
+      
+      <button type="submit" class="btn-primary">Log In</button>
+    </form>
+  </div>
+
+  <!-- MAIN DASHBOARD APP -->
+  <!-- Hidden by default (display: none) until the user logs in -->
+  <div id="app-view" style="display: none;" class="app-layout">
+    
+    <!-- SIDEBAR -->
+    <!-- Contains only the logo now. The toggle button was moved. -->
+    <div class="sidebar">
+      <h2 class="logo">CRM Pro</h2>
+    </div>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="main-content">
+      
+      <!-- Theme Toggle Button: Absolute positioned to the top right of the screen -->
+      <button id="theme-toggle" class="theme-icon-btn">🌙</button>
+
+      <div id="dashboard-view" class="view-section">
+        
+        <!-- HEADER: Title and Total Revenue tracker -->
+        <div class="header">
+          <div>
+            <h2>Sales Pipeline Dashboard</h2>
+            <h3 style="color: #2ecc71; margin-top: 5px;">Total Revenue: <span id="total-revenue">₹0</span></h3>
+          </div>
+        </div>
+
+        <!-- ADD CLIENT FORM -->
+        <div class="card">
+          <h3>Add New Client</h3>
+          <form id="add-form" class="inline-form">
+            <input type="text" id="add-company" placeholder="Company Name" required>
+            <input type="text" id="add-contact" placeholder="Contact Person" required>
+            <select id="add-status">
+              <option value="Active">Active</option>
+              <option value="Pending">Pending</option>
+              <option value="Closed">Closed</option>
+            </select>
+            <input type="number" id="add-value" placeholder="Deal Value (₹)" required>
+            <button type="submit" class="btn-success">Add Client</button>
+          </form>
+        </div>
+
+        <!-- DATA TABLE -->
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th>Contact</th>
+                <th>Status</th>
+                <th>Value (₹)</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <!-- JavaScript injects the Firebase data into this empty tbody -->
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Connects JavaScript. type="module" is required for Firebase to work -->
+  <script type="module" src="script.js"></script>
+</body>
+</html>
