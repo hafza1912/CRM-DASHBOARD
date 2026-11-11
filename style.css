@@ -140,6 +140,21 @@ body {
   background: var(--card-bg);
   color: var(--text-color);
 }
+.search-bar {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.search-bar:focus {
+  outline: none;
+  border-color: #3498db;
+}
 
 /* ==========================================
    7. DATA TABLE
