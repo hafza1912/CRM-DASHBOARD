@@ -71,6 +71,9 @@
 
         <!-- DATA TABLE -->
         <div class="card">
+          <!-- NEW: Search Filter -->
+          <input type="text" id="search-input" class="search-bar" placeholder="Search by Company or Contact...">
+          
           <table class="data-table">
             <thead>
               <tr>
@@ -81,7 +84,6 @@
                 <th>Action</th>
               </tr>
             </thead>
-            <!-- JavaScript injects the Firebase data into this empty tbody -->
             <tbody id="table-body"></tbody>
           </table>
         </div>
