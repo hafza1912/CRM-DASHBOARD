@@ -35,6 +35,7 @@ const tableBody = document.getElementById('table-body');
 const addForm = document.getElementById('add-form');
 const totalRevenueEl = document.getElementById('total-revenue');
 const themeBtn = document.getElementById('theme-toggle');
+const searchInput = document.getElementById('search-input');
 
 // ==========================================
 // 3. THEME TOGGLE (Moon/Sun)
@@ -98,13 +99,23 @@ loginForm.addEventListener('submit', function(event) {
 });
 
 // ==========================================
-// 6. RENDER HTML TABLE & REVENUE
+// 6. RENDER HTML TABLE & REVENUE (WITH SEARCH)
 // ==========================================
 function renderTable() {
   tableBody.innerHTML = '';
   let total = 0; 
   
-  clients.forEach(client => {
+  // 1. Get the current search text and convert to lowercase
+  const searchTerm = searchInput.value.toLowerCase();
+  
+  // 2. Filter the clients array before displaying
+  const filteredClients = clients.filter(client => {
+    return client.company.toLowerCase().includes(searchTerm) || 
+           client.contact.toLowerCase().includes(searchTerm);
+  });
+
+  // 3. Loop through ONLY the filtered clients
+  filteredClients.forEach(client => {
     total += Number(client.value); 
     
     const row = document.createElement('tr');
@@ -118,10 +129,14 @@ function renderTable() {
     tableBody.appendChild(row);
   });
 
+  // 4. Update revenue to reflect only the searched/visible clients
   if (totalRevenueEl) {
     totalRevenueEl.innerText = `₹${total.toLocaleString('en-IN')}`;
   }
 }
+
+// 5. Add an event listener to redraw the table instantly as you type
+searchInput.addEventListener('input', renderTable);
 
 // ==========================================
 // 7. FIREBASE CRUD (ADD & DELETE)
